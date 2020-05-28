@@ -36,6 +36,13 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+    externalNativeBuild {
+
+    // Encapsulates your ndkBuild build configurations.
+        ndkBuild {
+            path "./src/main/jni/Android.mk"
+        }
+  }
 }
 
 dependencies {

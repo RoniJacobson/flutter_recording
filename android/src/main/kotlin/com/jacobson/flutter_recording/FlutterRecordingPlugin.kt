@@ -1,6 +1,6 @@
 package com.jacobson.flutter_recording
 
-import androidx.annotation.NonNull;
+import androidx.annotation.NonNull
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -40,10 +40,16 @@ public class FlutterRecordingPlugin: FlutterPlugin, MethodCallHandler {
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-    if (call.method == "getPlatformVersion") {
-      result.success("Android ${android.os.Build.VERSION.RELEASE}")
-    } else {
-      result.notImplemented()
+    println(call.arguments)
+    println(call.method)
+    println(MP3Lame().stringFromJNI())
+    when (call.method) {
+      "getPlatformVersion" -> result.success("Android ${android.os.Build.VERSION.RELEASE}")
+      "startRecorder" -> result.success("Starting")
+      "stopRecorder" -> result.success("Stopping")
+      "pauseRecorder" -> result.success("Pausing")
+      "resumeRecorder" -> result.success("Playing")
+      else -> println("${call.method} not implemented")
     }
   }
 
