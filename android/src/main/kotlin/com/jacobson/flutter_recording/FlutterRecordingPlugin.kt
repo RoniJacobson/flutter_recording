@@ -3,6 +3,7 @@ package com.jacobson.flutter_recording
 import android.Manifest.permission.*
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
@@ -83,10 +84,14 @@ public class FlutterRecordingPlugin: FlutterPlugin, MethodCallHandler, ActivityA
 
   private fun startRecorder(call: MethodCall): String {
     if (call.argument<Int>("androidOutputFormat") == 20) {
-      recorder = MP3Recorder(call.argument<String>("fileName"),
-              call.argument<Int>("bitRate"),
-              call.argument<Int>("sampleRate"), 5)
-      recorder?.startRecording()
+//      recorder = MP3Recorder(call.argument<String>("fileName"),
+//              call.argument<Int>("bitRate")!!,
+//              call.argument<Int>("sampleRate")!!, 5)
+      activity?.let {
+        val serviceIntent = Intent(context, RecordingForegroundService::class.java)
+        ContextCompat.startForegroundService(it, serviceIntent)
+      }
+//      recorder?.startRecording()
       println('k')
       } else {
       return "not yet supported"
@@ -107,7 +112,13 @@ public class FlutterRecordingPlugin: FlutterPlugin, MethodCallHandler, ActivityA
   }
 
   private fun stop(call: MethodCall, result: Result) {
-    recorder?.stopRecording()
+//    recorder?.stopRecording()
+//    val serviceIntent = Intent(activity?.applicationContext, RecordingForegroundService::class.java)
+//    activity?.applicationContext?.stopService(serviceIntent)
+    Intent().also { intent ->
+      intent.action = "flutter.recorder.stop"
+      context.sendBroadcast(intent)
+    }
     result.success("Stopped")
   }
 
