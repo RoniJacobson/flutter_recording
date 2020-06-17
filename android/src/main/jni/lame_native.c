@@ -19,3 +19,42 @@ Java_com_jacobson_flutter_1recording_MP3Lame_initialize(JNIEnv *env, jobject thi
     lame_set_mode(lame_flags, MONO);
     lame_init_params(lame_flags);
 }
+
+JNIEXPORT int JNICALL
+Java_com_jacobson_flutter_1recording_MP3Lame_encodeBuffer(JNIEnv *env, jobject thiz,
+                                                          jshortArray pcm_buffer, jint amount,
+                                                          jbyteArray java_mp3buffer) {
+    const jsize mp3buffer_size = (*env)->GetArrayLength(env, java_mp3buffer);
+    jbyte *mp3buffer = (*env)->GetByteArrayElements(env, java_mp3buffer, NULL);
+
+    jshort *left_buffer = (*env)->GetShortArrayElements(env, pcm_buffer, NULL);
+    jshort *right_buffer = (*env)->GetShortArrayElements(env, pcm_buffer, NULL);
+
+    int result = lame_encode_buffer(lame_flags, left_buffer, right_buffer,
+                                    amount, mp3buffer, mp3buffer_size);
+
+    (*env)->ReleaseShortArrayElements(env, pcm_buffer, left_buffer, 0);
+    (*env)->ReleaseShortArrayElements(env, pcm_buffer, right_buffer, 0);
+    (*env)->ReleaseByteArrayElements(env, java_mp3buffer, mp3buffer, 0);
+
+    return result;
+}
+
+JNIEXPORT jint JNICALL
+Java_com_jacobson_flutter_1recording_MP3Lame_flush(JNIEnv *env, jobject thiz,
+                                                   jbyteArray java_mp3buffer) {
+    const jsize mp3buffer_size = (*env)->GetArrayLength(env, java_mp3buffer);
+    jbyte *mp3buffer = (*env)->GetByteArrayElements(env, java_mp3buffer, NULL);
+
+    int result = lame_encode_flush(lame_flags, mp3buffer, mp3buffer_size);
+
+    (*env)->ReleaseByteArrayElements(env, java_mp3buffer, mp3buffer, 0);
+
+    return result;
+}
+
+JNIEXPORT void JNICALL
+Java_com_jacobson_flutter_1recording_MP3Lame_close(JNIEnv *env, jobject thiz) {
+    lame_close(lame_flags);
+    lame_flags = NULL;
+}
