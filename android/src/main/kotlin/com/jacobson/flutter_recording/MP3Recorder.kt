@@ -16,7 +16,7 @@ import kotlin.math.log10
 
 
 @TargetApi(Build.VERSION_CODES.M)
-class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQuality: Int) : RecordingInterface {
+class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQuality: Int, val notificationCallback: (name: String) -> Unit) : RecordingInterface {
 //    lame_set_in_samplerate(glf, inSamplerate);
 //    lame_set_num_channels(glf, outChannel);
 //    lame_set_out_samplerate(glf, outSamplerate);
@@ -98,6 +98,7 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
         }
         writePCMToMP3(buffer, readSize)
         println("Max amplitude: $maxAmplitude ; DB: $db")
+        notificationCallback("$db")
     }
 
     private fun writePCMToMP3(buffer: ShortArray, readSize: Int) {
