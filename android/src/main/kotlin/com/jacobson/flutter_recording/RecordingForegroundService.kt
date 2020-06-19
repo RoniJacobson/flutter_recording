@@ -15,13 +15,19 @@ import androidx.core.app.NotificationCompat
 
 class RecordingForegroundService : Service() {
     private val channelID = "ForegroundServiceChannel"
-    private val notificationBuilder: NotificationCompat.Builder = NotificationCompat.Builder(this, channelID)
-            .setContentTitle("Recording")
-            .setSmallIcon(android.R.drawable.presence_audio_online)
+    private var notificationBuilder: NotificationCompat.Builder
     private val notificationID = 1
     private var intent: Intent? = null
     private var notificationManager: NotificationManager? = null
     private var broadcastReceiver: BroadcastReceiver? = null
+    private var recorder: RecordingInterface? = null
+
+    init {
+        notificationBuilder = NotificationCompat.Builder(this, channelID)
+                            .setContentTitle("Recording")
+                            .setSmallIcon(android.R.drawable.presence_audio_online)
+                            .setOnlyAlertOnce(true)
+    }
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -29,6 +35,16 @@ class RecordingForegroundService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createNotificationChannel()
+        val launchIntent: Intent? = applicationContext.packageManager?.getLaunchIntentForPackage(packageName)
+        val className = launchIntent?.component?.className
+        var pendingIntent: PendingIntent? = null
+        if (className != null) {
+            val appLaunchIntent = Intent(this, Class.forName(className))
+            appLaunchIntent.action = Intent.ACTION_VIEW
+            appLaunchIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            pendingIntent = PendingIntent.getActivity(this, 0, appLaunchIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            notificationBuilder = notificationBuilder.setContentIntent(pendingIntent)
+        }
         this.intent = intent
         println("in the service?")
         updateNotification("hi")
@@ -55,11 +71,8 @@ class RecordingForegroundService : Service() {
     }
 
     private fun updateNotification(text: String) {
-        val notificationIntent = Intent(this, intent?.javaClass)
-        val pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0)
-        val notification = notificationBuilder.setContentIntent(pendingIntent)
-                .setContentText(text)
+        val notification = notificationBuilder.setContentText(text)
+                .setVibrate(null)
                 .build()
         startForeground(notificationID, notification)
     }
