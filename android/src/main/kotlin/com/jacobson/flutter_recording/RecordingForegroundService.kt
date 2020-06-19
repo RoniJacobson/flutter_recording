@@ -50,9 +50,9 @@ class RecordingForegroundService : Service() {
         updateNotification("hi")
         updateNotification("also hi")
         val filter = IntentFilter()
-        filter.addAction("flutter.recorder.stop")
-        filter.addAction("flutter.recorder.pause")
-        broadcastReceiver = RecorderBroadcastReceiver(this)
+        filter.addAction("$className.recorder.stop")
+        filter.addAction("$className.recorder.pause")
+        broadcastReceiver = RecorderBroadcastReceiver(this, className!!)
         registerReceiver(broadcastReceiver, filter)
         super.onStartCommand(intent, flags, startId)
         return START_NOT_STICKY
