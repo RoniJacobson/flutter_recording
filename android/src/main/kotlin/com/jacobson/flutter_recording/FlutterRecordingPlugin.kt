@@ -115,8 +115,10 @@ public class FlutterRecordingPlugin: FlutterPlugin, MethodCallHandler, ActivityA
 //    recorder?.stopRecording()
 //    val serviceIntent = Intent(activity?.applicationContext, RecordingForegroundService::class.java)
 //    activity?.applicationContext?.stopService(serviceIntent)
+    val launchIntent: Intent? = context.packageManager?.getLaunchIntentForPackage(context.packageName)
+    val className = launchIntent?.component?.className
     Intent().also { intent ->
-      intent.action = "flutter.recorder.stop"
+      intent.action = "$className.recorder.stop"
       context.sendBroadcast(intent)
     }
     result.success("Stopped")
