@@ -53,7 +53,7 @@ class FlutterRecording {
   int sampleRate;
   int channels;
   int bitRate;
-  int androidOutputFormat = AndroidOutputFormat.DEFAULT;
+  int androidOutputFormat = AndroidOutputFormat.MP3;
   int androidAudioEncoder = AndroidAudioEncoder.DEFAULT;
   bool requestPermission = true;
   String mes;
@@ -62,6 +62,18 @@ class FlutterRecording {
 
   FlutterRecording() {}
 
+  Future<void> init() async{
+    var state = await _channel.invokeMethod('getServiceStatus');
+    switch (state) {
+      case "Recording":
+        _state = RecorderState.RECORDING;
+        break;
+      case "Stopped":
+        _state = RecorderState.STOPPED;
+        break;
+      default:
+    }
+  }
   /// will start recording if we are stopped, and throw if we are already recording
   Future<void> start(
       {@required fileName,
