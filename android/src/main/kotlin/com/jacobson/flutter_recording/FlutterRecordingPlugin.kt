@@ -60,6 +60,9 @@ public class FlutterRecordingPlugin: FlutterPlugin, MethodCallHandler, ActivityA
     println(call.arguments)
     println(call.method)
     when (call.method) {
+      "getServiceStatus" -> {
+        result.success(RecordingForegroundService.state.name)
+      }
       "getPlatformVersion" -> result.success("Android ${android.os.Build.VERSION.RELEASE}")
       "startRecorder" -> {
         start(call, result)

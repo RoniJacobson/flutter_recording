@@ -21,7 +21,9 @@ class RecordingForegroundService : Service() {
     private var notificationManager: NotificationManager? = null
     private var broadcastReceiver: BroadcastReceiver? = null
     private var recorder: RecordingInterface? = null
-
+    companion object {
+        var state = RecorderState.Stopped
+    }
     init {
         notificationBuilder = NotificationCompat.Builder(this, channelID)
                             .setContentTitle("Recording")
@@ -46,6 +48,7 @@ class RecordingForegroundService : Service() {
             notificationBuilder = notificationBuilder.setContentIntent(pendingIntent)
         }
         this.intent = intent
+        state = RecorderState.Recording
         println("in the service?")
         val filter = IntentFilter()
         filter.addAction("$className.recorder.stop")
@@ -83,6 +86,11 @@ class RecordingForegroundService : Service() {
     override fun onDestroy() {
         endNotification()
         unregisterReceiver(broadcastReceiver)
+        state = RecorderState.Stopped
         super.onDestroy()
     }
+}
+
+enum class RecorderState {
+    Recording, Paused, Stopped
 }
