@@ -15,6 +15,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    flutterRecording.init().whenComplete(() => setState((){}));
     super.initState();
   }
 
