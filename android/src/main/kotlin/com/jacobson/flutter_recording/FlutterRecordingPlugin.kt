@@ -35,7 +35,7 @@ public class FlutterRecordingPlugin: FlutterPlugin, MethodCallHandler, ActivityA
   private val notAvailiblePermission: String = "Getting Permissions"
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding)  {
     context = flutterPluginBinding.applicationContext
-    channel = MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "flutter_recording")
+    channel = MethodChannel(flutterPluginBinding.flutterEngine.dartExecutor, "flutter_recording")
     channel.setMethodCallHandler(this);
   }
 
@@ -83,18 +83,9 @@ public class FlutterRecordingPlugin: FlutterPlugin, MethodCallHandler, ActivityA
   }
 
   private fun startRecorder(call: MethodCall): String {
-    if (call.argument<Int>("androidOutputFormat") == 20) {
-//      recorder = MP3Recorder(call.argument<String>("fileName"),
-//              call.argument<Int>("bitRate")!!,
-//              call.argument<Int>("sampleRate")!!, 5)
       activity?.let {
         val serviceIntent = Intent(context, RecordingForegroundService::class.java)
         ContextCompat.startForegroundService(it, serviceIntent)
-      }
-//      recorder?.startRecording()
-      println('k')
-      } else {
-      return "not yet supported"
       }
     return "Starting"
   }
@@ -112,9 +103,6 @@ public class FlutterRecordingPlugin: FlutterPlugin, MethodCallHandler, ActivityA
   }
 
   private fun stop(call: MethodCall, result: Result) {
-//    recorder?.stopRecording()
-//    val serviceIntent = Intent(activity?.applicationContext, RecordingForegroundService::class.java)
-//    activity?.applicationContext?.stopService(serviceIntent)
     val launchIntent: Intent? = context.packageManager?.getLaunchIntentForPackage(context.packageName)
     val className = launchIntent?.component?.className
     Intent().also { intent ->

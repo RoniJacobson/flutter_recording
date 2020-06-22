@@ -47,8 +47,6 @@ class RecordingForegroundService : Service() {
         }
         this.intent = intent
         println("in the service?")
-        updateNotification("hi")
-        updateNotification("also hi")
         val filter = IntentFilter()
         filter.addAction("$className.recorder.stop")
         filter.addAction("$className.recorder.pause")
