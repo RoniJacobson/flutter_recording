@@ -44,9 +44,19 @@ class RecorderError extends Error {
   }
 }
 
+class Timestamp {
+  final Duration time;
+  final double volume;
+  Timestamp._(int time, this.volume): this.time = Duration(milliseconds: time);
+}
+
 class FlutterRecording {
   static const MethodChannel _channel =
       const MethodChannel('flutter_recording');
+  static const EventChannel _eventChannel =
+      const EventChannel('flutter_recording/updates');
+
+  Stream<Timestamp> _onTimestampUpdate;
 
   RecorderState _state = RecorderState.STOPPED;
   String fileName;
@@ -59,6 +69,15 @@ class FlutterRecording {
   String mes;
 
   RecorderState get state => _state;
+  Stream<Timestamp> get onTimestampUpdate {
+    if (_onTimestampUpdate== null) {
+      _onTimestampUpdate = _eventChannel
+          .receiveBroadcastStream()
+          .map((dynamic timestamp) => Timestamp._(timestamp[0], timestamp[1]));
+    }
+    return _onTimestampUpdate;
+  }
+
 
   FlutterRecording() {}
 
