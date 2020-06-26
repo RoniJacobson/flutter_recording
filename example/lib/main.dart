@@ -12,11 +12,27 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   FlutterRecording flutterRecording = FlutterRecording();
+  Duration currentTime = Duration.zero;
+  double currentVolume = 0;
+
+  String getTime() {
+      int milliseconds = currentTime.inMilliseconds;
+      int seconds = milliseconds ~/ 1000;
+      int minutes = seconds % 3600 ~/ 60;
+      int hours = seconds ~/ 3600;
+      return '$hours:$minutes:$seconds';
+    }
 
   @override
   void initState() {
-    flutterRecording.init().whenComplete(() => setState((){}));
+    flutterRecording.init().whenComplete(() => setState(() {}));
     super.initState();
+    flutterRecording.onTimestampUpdate.listen((event) {
+      setState(() {
+        currentTime = event.time;
+        currentVolume = event.volume;
+      });
+    });
   }
 
   @override
@@ -57,7 +73,9 @@ class _MyAppState extends State<MyApp> {
                   },
                   child: Text('Resume'),
                 ),
-                Text('${flutterRecording.state}')
+                Text('${flutterRecording.state}'),
+                Text('${getTime()}'),
+                Text('${this.currentVolume}'),
               ],
             ),
           )),
