@@ -73,9 +73,7 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
             recorder.startRecording()
             val empty = ShortArray(500)
             infoTimer.scheduleAtFixedRate(timerTask {
-                currentTime += callbackRate.toInt()
-                TimeDBStream.sendInfo(currentTime, maxAmplitude)
-                maxAmplitude = 0.0
+                timerFunction()
             }, 0L, callbackRate)
             while (isActive) {
                     // read the data into the buffer
@@ -114,6 +112,12 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
         val mp3Buffer = ByteArray(ceil(1.25*buffer.size + 7200).toInt())
         val bytesEncoded = mp3Lame.encodeBuffer(buffer, readSize, mp3Buffer)
         outputStream?.write(mp3Buffer, 0, bytesEncoded)
+    }
+
+    private fun timerFunction() {
+        currentTime += callbackRate.toInt()
+        TimeDBStream.sendInfo(currentTime, maxAmplitude)
+        maxAmplitude = 0.0
     }
 
     private fun close() {
