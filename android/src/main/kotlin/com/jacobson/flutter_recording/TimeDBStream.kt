@@ -13,7 +13,7 @@ object TimeDBStream: EventChannel.StreamHandler {
         this.events = events
     }
 
-    fun sendInfo(timestamp: Int, maxDecibel: Int) {
+    fun sendInfo(timestamp: Int, maxDecibel: Double) {
         Handler(Looper.getMainLooper()).post {
             events?.success(arrayListOf(timestamp, maxDecibel))
         }
