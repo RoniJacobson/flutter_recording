@@ -1,15 +1,15 @@
 package com.jacobson.flutter_recording
 
 import android.annotation.TargetApi
-import android.content.ContentValues.TAG
 import android.media.*
 import android.os.Build
 import android.os.Environment
 import android.os.Process
-import android.system.Os.close
 import android.util.Log
 import kotlinx.coroutines.*
 import java.io.*
+import java.util.*
+import kotlin.concurrent.timerTask
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.log10
@@ -22,6 +22,7 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
 //    lame_set_out_samplerate(glf, outSamplerate);
 //    lame_set_brate(glf, outBitrate);
 //    lame_set_quality(glf, quality);
+    private val callbackRate = 100.toLong()
     private val mp3Lame: MP3Lame
     private var recorder: AudioRecord
     private val sampleRate = 44100
@@ -31,6 +32,9 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
     private var file: File? = null
     private var outputStream: FileOutputStream? = null
     private val bufferSize: Int
+    private var maxAmplitude = 0.0
+    private var currentTime = -callbackRate.toInt()
+    private var infoTimer = Timer()
     init {
         val rate = AudioTrack.getNativeOutputSampleRate(AudioManager.STREAM_SYSTEM)
         bufferSize = AudioRecord.getMinBufferSize(rate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)
@@ -68,6 +72,11 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
             outputStream = FileOutputStream(file, true)
             recorder.startRecording()
             val empty = ShortArray(500)
+            infoTimer.scheduleAtFixedRate(timerTask {
+                currentTime += callbackRate.toInt()
+                TimeDBStream.sendInfo(currentTime, maxAmplitude)
+                maxAmplitude = 0.0
+            }, 0L, callbackRate)
             while (isActive) {
                     // read the data into the buffer
                     val readSize = recorder.read(buffer, 0, buffer.size)
@@ -85,7 +94,7 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
     }
 
     private fun writeShorts(readSize: Int, buffer: ShortArray, outputStream: FileOutputStream) {
-        var maxAmplitude = 0.0
+        maxAmplitude = 0.0
         for (i in 0 until readSize) {
             val current = abs(buffer[i].toDouble())
             if (current > maxAmplitude) {
@@ -115,6 +124,7 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
         outputStream?.write(mp3Buffer)
         outputStream?.flush()
         outputStream?.close()
+        infoTimer.cancel()
     }
 
     override fun stopRecording() {

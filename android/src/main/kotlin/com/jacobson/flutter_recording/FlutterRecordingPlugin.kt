@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -29,6 +30,7 @@ public class FlutterRecordingPlugin: FlutterPlugin, MethodCallHandler, ActivityA
   private var recorder: RecordingInterface? = null
   private lateinit var context: Context
   private lateinit var channel : MethodChannel
+  private lateinit var eventChannel: EventChannel
   private var activity: Activity? = null
   private var binding: ActivityPluginBinding? = null
   private val permissionRequestCode = 440404
@@ -36,7 +38,9 @@ public class FlutterRecordingPlugin: FlutterPlugin, MethodCallHandler, ActivityA
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding)  {
     context = flutterPluginBinding.applicationContext
     channel = MethodChannel(flutterPluginBinding.flutterEngine.dartExecutor, "flutter_recording")
-    channel.setMethodCallHandler(this);
+    channel.setMethodCallHandler(this)
+    eventChannel = EventChannel(flutterPluginBinding.flutterEngine.dartExecutor, "flutter_recording/updates")
+    eventChannel.setStreamHandler(TimeDBStream)
   }
 
   // This static function is optional and equivalent to onAttachedToEngine. It supports the old
@@ -53,6 +57,8 @@ public class FlutterRecordingPlugin: FlutterPlugin, MethodCallHandler, ActivityA
     fun registerWith(registrar: Registrar) {
       val channel = MethodChannel(registrar.messenger(), "flutter_recording")
       channel.setMethodCallHandler(FlutterRecordingPlugin())
+      val eventChannel = EventChannel(registrar.messenger(), "plugins.flutter.io/connectivity_status")
+      eventChannel.setStreamHandler(TimeDBStream)
     }
   }
 
