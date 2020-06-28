@@ -47,7 +47,6 @@ class RecordingForegroundService : Service() {
             pendingIntent = PendingIntent.getActivity(this, 0, appLaunchIntent, PendingIntent.FLAG_UPDATE_CURRENT)
             notificationBuilder = notificationBuilder.setContentIntent(pendingIntent)
         }
-        this.intent = intent
         state = RecorderState.Recording
         println("in the service?")
         val filter = IntentFilter()
@@ -56,6 +55,15 @@ class RecordingForegroundService : Service() {
         filter.addAction("$className.recorder.resume")
         broadcastReceiver = RecorderBroadcastReceiver(this, className!!)
         registerReceiver(broadcastReceiver, filter)
+        val fileName: String? = intent?.getStringExtra("fileName")
+        val sampleRate: Int? = intent?.getIntExtra("sampleRate", 32000)
+        val bitRate: Int? = intent?.getIntExtra("bitRate", 44100)
+        if (fileName != null && sampleRate != null && bitRate != null) {
+            recorder = MP3Recorder(fileName,
+                    sampleRate,
+                    bitRate, 5, this::updateNotification)
+        }
+        recorder?.startRecording()
         super.onStartCommand(intent, flags, startId)
         return START_NOT_STICKY
     }
@@ -96,6 +104,7 @@ class RecordingForegroundService : Service() {
 
     override fun onDestroy() {
         endNotification()
+        recorder?.stopRecording()
         unregisterReceiver(broadcastReceiver)
         state = RecorderState.Stopped
         super.onDestroy()

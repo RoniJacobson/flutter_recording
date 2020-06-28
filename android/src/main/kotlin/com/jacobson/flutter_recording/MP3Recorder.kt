@@ -18,7 +18,7 @@ import kotlin.math.log10
 
 
 @TargetApi(Build.VERSION_CODES.M)
-class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQuality: Int, val notificationCallback: (name: String) -> Unit) : RecordingInterface {
+class MP3Recorder(val fileName: String, bitRate: Int, sampleRate: Int, lameQuality: Int, val notificationCallback: (name: String) -> Unit) : RecordingInterface {
 //    lame_set_in_samplerate(glf, inSamplerate);
 //    lame_set_num_channels(glf, outChannel);
 //    lame_set_out_samplerate(glf, outSamplerate);
@@ -27,7 +27,6 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
     private val callbackRate = 100.toLong()
     private val mp3Lame: MP3Lame
     private var recorder: AudioRecord
-    private val sampleRate = 44100
     private val channels = AudioFormat.CHANNEL_IN_MONO
     private val encoding = AudioFormat.ENCODING_PCM_16BIT
     private var recordingThread: Job? = null
@@ -42,14 +41,13 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
     private var running = false
     init {
         val rate = AudioTrack.getNativeOutputSampleRate(AudioManager.STREAM_SYSTEM)
-        bufferSize = AudioRecord.getMinBufferSize(rate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)
-        mp3Lame = MP3Lame(bitRate, rate, lameQuality)
+        bufferSize = AudioRecord.getMinBufferSize(rate, channels, encoding)
+        mp3Lame = MP3Lame(bitRate, sampleRate, lameQuality)
         val audioFormat = AudioFormat.Builder()
                 .setEncoding(encoding)
                 .setSampleRate(rate)
                 .setChannelMask(channels)
                 .build()
-//        val bufferSize = AudioRecord.getMinBufferSize(this.sampleRate, channels, encoding)
         recorder = AudioRecord.Builder()
                 .setAudioSource(MediaRecorder.AudioSource.MIC)
                 .setAudioFormat(audioFormat)
@@ -73,7 +71,9 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
             if (state != Environment.MEDIA_MOUNTED) {
                 Log.d("Media Unmounted", "Need to add a thing to fix this")
             }
-            file = File(Environment.getExternalStorageDirectory(), fileName)
+            print(Environment.getExternalStorageDirectory().absolutePath)
+            file = File(fileName)
+            file?.parentFile?.mkdirs()
             file?.createNewFile()
             outputStream = FileOutputStream(file, true)
             recorder.startRecording()

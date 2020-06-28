@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_recording/flutter_recording.dart';
+import 'package:path/path.dart' as path;
 
 void main() {
   runApp(MyApp());
@@ -47,7 +48,7 @@ class _MyAppState extends State<MyApp> {
               children: <Widget>[
                 RaisedButton(
                   onPressed: () async {
-                    await flutterRecording.start(fileName: 'bob');
+                    await flutterRecording.start(fileName: path.join('/storage/emulated/0/flutter_recording_example', 'bob.mp3'));
                     setState(() {});
                   },
                   child: Text('Start'),

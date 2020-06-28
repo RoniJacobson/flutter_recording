@@ -18,6 +18,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
+import kotlin.reflect.typeOf
 
 
 /** FlutterRecordingPlugin */
@@ -92,10 +93,16 @@ public class FlutterRecordingPlugin: FlutterPlugin, MethodCallHandler, ActivityA
   }
 
   private fun startRecorder(call: MethodCall): String {
-      activity?.let {
-        val serviceIntent = Intent(context, RecordingForegroundService::class.java)
-        ContextCompat.startForegroundService(it, serviceIntent)
-      }
+    val fileName: String? = call.argument<String>("fileName")
+    val sampleRate: Int? = call.argument<Int>("sampleRate")
+    val bitRate: Int? = call.argument<Int>("bitRate")
+    activity?.let {
+      val serviceIntent = Intent(context, RecordingForegroundService::class.java)
+      serviceIntent.putExtra("fileName", fileName)
+      serviceIntent.putExtra("sampleRate", sampleRate)
+      serviceIntent.putExtra("bitRate", bitRate)
+      ContextCompat.startForegroundService(it, serviceIntent)
+    }
     return "Starting"
   }
 
