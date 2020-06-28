@@ -76,8 +76,8 @@ public class FlutterRecordingPlugin: FlutterPlugin, MethodCallHandler, ActivityA
       "stopRecorder" -> {
         stop(call, result)
       }
-      "pauseRecorder" -> result.success("Pausing")
-      "resumeRecorder" -> result.success("Playing")
+      "pauseRecorder" -> pause(call, result)
+      "resumeRecorder" -> resume(call, result)
       else -> result.success("${call.method} not implemented")
     }
   }
@@ -119,6 +119,27 @@ public class FlutterRecordingPlugin: FlutterPlugin, MethodCallHandler, ActivityA
       context.sendBroadcast(intent)
     }
     result.success("Stopped")
+  }
+
+  private fun pause(call: MethodCall, result: Result) {
+    val launchIntent: Intent? = context.packageManager?.getLaunchIntentForPackage(context.packageName)
+    val className = launchIntent?.component?.className
+    Intent().also { intent ->
+      intent.action = "$className.recorder.pause"
+      context.sendBroadcast(intent)
+    }
+    result.success("Paused")
+  }
+
+  private fun resume(call: MethodCall, result: Result) {
+    val launchIntent: Intent? = context.packageManager?.getLaunchIntentForPackage(context.packageName)
+    val className = launchIntent?.component?.className
+    println(className)
+    Intent().also { intent ->
+      intent.action = "$className.recorder.resume"
+      context.sendBroadcast(intent)
+    }
+    result.success("Resumed")
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {

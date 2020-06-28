@@ -53,6 +53,7 @@ class RecordingForegroundService : Service() {
         val filter = IntentFilter()
         filter.addAction("$className.recorder.stop")
         filter.addAction("$className.recorder.pause")
+        filter.addAction("$className.recorder.resume")
         broadcastReceiver = RecorderBroadcastReceiver(this, className!!)
         registerReceiver(broadcastReceiver, filter)
         super.onStartCommand(intent, flags, startId)
@@ -81,6 +82,16 @@ class RecordingForegroundService : Service() {
     private fun endNotification() {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(notificationID)
+    }
+
+    fun pause() {
+        recorder?.pauseRecording()
+        state = RecorderState.Paused
+    }
+
+    fun resume() {
+        recorder?.resumeRecoding()
+        state = RecorderState.Recording
     }
 
     override fun onDestroy() {

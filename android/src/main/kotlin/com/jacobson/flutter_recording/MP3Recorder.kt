@@ -8,6 +8,8 @@ import android.os.Process
 import android.util.Log
 import kotlinx.coroutines.*
 import java.io.*
+import java.sql.Time
+import java.time.Instant
 import java.util.*
 import kotlin.concurrent.timerTask
 import kotlin.math.abs
@@ -35,6 +37,9 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
     private var maxAmplitude = 0.0
     private var currentTime = -callbackRate.toInt()
     private var infoTimer = Timer()
+    private var lastTimerTick: Long = System.currentTimeMillis()
+    private var pauseTime: Long = System.currentTimeMillis()
+    private var running = false
     init {
         val rate = AudioTrack.getNativeOutputSampleRate(AudioManager.STREAM_SYSTEM)
         bufferSize = AudioRecord.getMinBufferSize(rate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)
@@ -59,6 +64,7 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
 
     private fun writeAudioDataToFile() {
         recordingThread = GlobalScope.launch{
+            running = true
             val buffer = ShortArray(bufferSize)
             Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO)
 
@@ -79,12 +85,14 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
                     // read the data into the buffer
                     val readSize = recorder.read(buffer, 0, buffer.size)
                     // on startup there will be zero bytes, strip them out
-                    if (buffer.sliceArray(1..500).contentEquals(empty)) {
-                        val buffer2 = buffer.dropWhile { it.toInt() == 0 }.toShortArray()
-                        val readSize2 = buffer2.size
-                        writeShorts(readSize2, buffer2, outputStream!!)
-                    } else {
-                        writeShorts(readSize, buffer, outputStream!!)
+                    if (running) {
+                        if (buffer.sliceArray(1..500).contentEquals(empty)) {
+                            val buffer2 = buffer.dropWhile { it.toInt() == 0 }.toShortArray()
+                            val readSize2 = buffer2.size
+                            writeShorts(readSize2, buffer2, outputStream!!)
+                        } else {
+                            writeShorts(readSize, buffer, outputStream!!)
+                        }
                     }
             }
             println("file closed")
@@ -115,6 +123,7 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
     }
 
     private fun timerFunction() {
+        lastTimerTick = System.currentTimeMillis()
         currentTime += callbackRate.toInt()
         TimeDBStream.sendInfo(currentTime, maxAmplitude)
         maxAmplitude = 0.0
@@ -141,11 +150,16 @@ class MP3Recorder(val fileName: String?, bitRate: Int, sampleRate: Int, lameQual
     }
 
     override fun pauseRecording() {
-        TODO("Not yet implemented")
+        running = false
+        infoTimer.cancel()
+        pauseTime = System.currentTimeMillis()
     }
 
     override fun resumeRecoding() {
-        TODO("Not yet implemented")
+        infoTimer = Timer()
+        running = true
+        maxAmplitude = 0.0
+        infoTimer.scheduleAtFixedRate(timerTask { timerFunction() }, callbackRate - (pauseTime - lastTimerTick), callbackRate)
     }
 
 }
