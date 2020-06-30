@@ -42,7 +42,7 @@ class MP3Recorder(val fileName: String, bitRate: Int, sampleRate: Int, lameQuali
     init {
         val rate = AudioTrack.getNativeOutputSampleRate(AudioManager.STREAM_SYSTEM)
         bufferSize = AudioRecord.getMinBufferSize(rate, channels, encoding)
-        mp3Lame = MP3Lame(bitRate, sampleRate, lameQuality)
+        mp3Lame = MP3Lame(bitRate, rate, sampleRate, lameQuality)
         val audioFormat = AudioFormat.Builder()
                 .setEncoding(encoding)
                 .setSampleRate(rate)
@@ -109,11 +109,15 @@ class MP3Recorder(val fileName: String, bitRate: Int, sampleRate: Int, lameQuali
         }
         var db = 0.0
         if (maxAmplitude != 0.0) {
-            db = 20.0 * log10(maxAmplitude / 32767.0) + 90
+            db = amplitudeToDecibels(maxAmplitude)
         }
         writePCMToMP3(buffer, readSize)
         println("Max amplitude: $maxAmplitude ; DB: $db")
         notificationCallback("$db")
+    }
+
+    private fun amplitudeToDecibels(amplitude: Double): Double{
+        return 20.0 * log10(amplitude / 32767.0) + 90
     }
 
     private fun writePCMToMP3(buffer: ShortArray, readSize: Int) {
@@ -125,7 +129,7 @@ class MP3Recorder(val fileName: String, bitRate: Int, sampleRate: Int, lameQuali
     private fun timerFunction() {
         lastTimerTick = System.currentTimeMillis()
         currentTime += callbackRate.toInt()
-        TimeDBStream.sendInfo(currentTime, maxAmplitude)
+        TimeDBStream.sendInfo(currentTime, amplitudeToDecibels(maxAmplitude))
         maxAmplitude = 0.0
     }
 
