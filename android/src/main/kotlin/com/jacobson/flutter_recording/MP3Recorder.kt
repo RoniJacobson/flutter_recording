@@ -18,13 +18,12 @@ import kotlin.math.log10
 
 
 @TargetApi(Build.VERSION_CODES.M)
-class MP3Recorder(val fileName: String, bitRate: Int, sampleRate: Int, lameQuality: Int, val notificationCallback: (name: String) -> Unit) : RecordingInterface {
+class MP3Recorder(val fileName: String, bitRate: Int, sampleRate: Int, lameQuality: Int, val notificationCallback: (name: String) -> Unit, val callbackRate: Long, val timestampBufferLength: Int) : RecordingInterface {
 //    lame_set_in_samplerate(glf, inSamplerate);
 //    lame_set_num_channels(glf, outChannel);
 //    lame_set_out_samplerate(glf, outSamplerate);
 //    lame_set_brate(glf, outBitrate);
 //    lame_set_quality(glf, quality);
-    private val callbackRate = 100.toLong()
     private val mp3Lame: MP3Lame
     private var recorder: AudioRecord
     private val channels = AudioFormat.CHANNEL_IN_MONO

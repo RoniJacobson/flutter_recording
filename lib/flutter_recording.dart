@@ -98,7 +98,7 @@ class FlutterRecording {
       {@required fileName,
       sampleRate = 44100,
       bitRate = 32000,
-      channels = 1}) async {
+      channels = 1, callbackRate=200, timestampBufferLength=10}) async {
     if (state == RecorderState.STOPPED) {
       this.fileName = fileName;
       this.sampleRate = sampleRate;
@@ -111,7 +111,8 @@ class FlutterRecording {
         'channels': channels,
         'androidAudioEncoder': androidAudioEncoder,
         'androidOutputFormat': androidOutputFormat,
-        'requstPermission': false,
+        'callbackRate': callbackRate,
+        'timestampBufferLength': timestampBufferLength,
       };
       await _channel.invokeMethod('startRecorder', args);
       _state = RecorderState.RECORDING;

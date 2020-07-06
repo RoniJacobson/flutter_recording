@@ -56,12 +56,14 @@ class RecordingForegroundService : Service() {
         broadcastReceiver = RecorderBroadcastReceiver(this, className!!)
         registerReceiver(broadcastReceiver, filter)
         val fileName: String? = intent?.getStringExtra("fileName")
-        val sampleRate: Int? = intent?.getIntExtra("sampleRate", 32000)
-        val bitRate: Int? = intent?.getIntExtra("bitRate", 44100)
-        if (fileName != null && sampleRate != null && bitRate != null) {
+        val sampleRate: Int? = intent?.getIntExtra("sampleRate", 44100)
+        val bitRate: Int? = intent?.getIntExtra("bitRate", 32000)
+        val callbackRate: Long? = intent?.getIntExtra("callbackRate", 200)?.toLong()
+        val timestampBufferLength: Int? = intent?.getIntExtra("timestampBufferLength", 10)
+        if (fileName != null && sampleRate != null && bitRate != null && callbackRate != null && timestampBufferLength != null) {
             recorder = MP3Recorder(fileName,
                     sampleRate,
-                    bitRate, 5, this::updateNotification)
+                    bitRate, 5, this::updateNotification, callbackRate, timestampBufferLength)
         }
         recorder?.startRecording()
         super.onStartCommand(intent, flags, startId)
