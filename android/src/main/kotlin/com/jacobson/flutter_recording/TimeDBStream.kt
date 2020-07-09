@@ -3,8 +3,6 @@ package com.jacobson.flutter_recording
 import android.os.Handler
 import android.os.Looper
 import io.flutter.plugin.common.EventChannel
-import java.time.Instant
-import java.util.*
 
 object TimeDBStream: EventChannel.StreamHandler {
     var events: EventChannel.EventSink? = null
@@ -13,9 +11,9 @@ object TimeDBStream: EventChannel.StreamHandler {
         this.events = events
     }
 
-    fun sendInfo(timestamp: Int, maxDecibel: Double) {
+    fun sendInfo(timestampsList: MutableList<List<Number>>) {
         Handler(Looper.getMainLooper()).post {
-            events?.success(arrayListOf(timestamp, maxDecibel))
+            events?.success(timestampsList)
         }
     }
 

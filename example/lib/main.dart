@@ -14,13 +14,15 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   FlutterRecording flutterRecording = FlutterRecording();
   Duration currentTime = Duration.zero;
-  double currentVolume = 0;
+  // double currentVolume = 0;
+  String currentVolume = "";
 
   String getTime() {
       int milliseconds = currentTime.inMilliseconds;
-      int seconds = milliseconds ~/ 1000;
-      int minutes = seconds % 3600 ~/ 60;
-      int hours = seconds ~/ 3600;
+      int fullSeconds = milliseconds ~/ 1000;
+      int seconds = fullSeconds % 60;
+      int minutes = fullSeconds ~/ 60 % 60;
+      int hours = fullSeconds ~/ 3600;
       return '$hours:$minutes:$seconds';
     }
 
@@ -30,8 +32,11 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     flutterRecording.onTimestampUpdate.listen((event) {
       setState(() {
-        currentTime = event.time;
-        currentVolume = event.volume;
+        currentTime = event.last.time;
+        var a = event.removeLast();
+        var b = event.removeLast();
+        var c = event.removeLast();
+        currentVolume = "${c.volume} ${b.volume} ${a.volume}";
       });
     });
   }

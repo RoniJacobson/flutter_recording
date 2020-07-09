@@ -56,7 +56,7 @@ class FlutterRecording {
   static const EventChannel _eventChannel =
       const EventChannel('flutter_recording/updates');
 
-  Stream<Timestamp> _onTimestampUpdate;
+  Stream<List<Timestamp>> _onTimestampUpdate;
 
   RecorderState _state = RecorderState.STOPPED;
   String fileName;
@@ -65,19 +65,24 @@ class FlutterRecording {
   int bitRate;
   int androidOutputFormat = AndroidOutputFormat.MP3;
   int androidAudioEncoder = AndroidAudioEncoder.DEFAULT;
-  bool requestPermission = true;
+  int callbackRate;
+  int timestampBufferLength;
   String mes;
 
   RecorderState get state => _state;
-  Stream<Timestamp> get onTimestampUpdate {
-    if (_onTimestampUpdate== null) {
-      _onTimestampUpdate = _eventChannel
-          .receiveBroadcastStream()
-          .map((dynamic timestamp) => Timestamp._(timestamp[0], timestamp[1]));
+  Stream<List<Timestamp>> get onTimestampUpdate {
+    if (_onTimestampUpdate == null) {
+      _onTimestampUpdate =
+          _eventChannel.receiveBroadcastStream().map(_toTimestamps);
     }
     return _onTimestampUpdate;
   }
 
+  List<Timestamp> _toTimestamps(timestamps) {
+    return timestamps
+        .map<Timestamp>((timestamp) => Timestamp._(timestamp[0], timestamp[1]))
+        .toList();
+  }
 
   FlutterRecording() {}
 

@@ -8,8 +8,6 @@ import android.os.Process
 import android.util.Log
 import kotlinx.coroutines.*
 import java.io.*
-import java.sql.Time
-import java.time.Instant
 import java.util.*
 import kotlin.concurrent.timerTask
 import kotlin.math.abs
@@ -24,6 +22,7 @@ class MP3Recorder(val fileName: String, bitRate: Int, sampleRate: Int, lameQuali
 //    lame_set_out_samplerate(glf, outSamplerate);
 //    lame_set_brate(glf, outBitrate);
 //    lame_set_quality(glf, quality);
+    private val timestampsList: MutableList<List<Number>> = mutableListOf()
     private val mp3Lame: MP3Lame
     private var recorder: AudioRecord
     private val channels = AudioFormat.CHANNEL_IN_MONO
@@ -128,7 +127,10 @@ class MP3Recorder(val fileName: String, bitRate: Int, sampleRate: Int, lameQuali
     private fun timerFunction() {
         lastTimerTick = System.currentTimeMillis()
         currentTime += callbackRate.toInt()
-        TimeDBStream.sendInfo(currentTime, amplitudeToDecibels(maxAmplitude))
+        timestampsList.add(listOf(currentTime, amplitudeToDecibels(maxAmplitude)))
+        TimeDBStream.sendInfo(timestampsList)
+        if (timestampsList.count() == timestampBufferLength)
+            timestampsList.removeAt(0)
         maxAmplitude = 0.0
     }
 
