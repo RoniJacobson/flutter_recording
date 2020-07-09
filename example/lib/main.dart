@@ -18,13 +18,13 @@ class _MyAppState extends State<MyApp> {
   String currentVolume = "";
 
   String getTime() {
-      int milliseconds = currentTime.inMilliseconds;
-      int fullSeconds = milliseconds ~/ 1000;
-      int seconds = fullSeconds % 60;
-      int minutes = fullSeconds ~/ 60 % 60;
-      int hours = fullSeconds ~/ 3600;
-      return '$hours:$minutes:$seconds';
-    }
+    int milliseconds = currentTime.inMilliseconds;
+    int fullSeconds = milliseconds ~/ 1000;
+    int seconds = fullSeconds % 60;
+    int minutes = fullSeconds ~/ 60 % 60;
+    int hours = fullSeconds ~/ 3600;
+    return '$hours:$minutes:$seconds';
+  }
 
   @override
   void initState() {
@@ -53,7 +53,10 @@ class _MyAppState extends State<MyApp> {
               children: <Widget>[
                 RaisedButton(
                   onPressed: () async {
-                    await flutterRecording.start(fileName: path.join('/storage/emulated/0/flutter_recording_example', 'bob.mp3'));
+                    await flutterRecording.start(
+                        fileName: path.join(
+                            '/storage/emulated/0/flutter_recording_example',
+                            'bob.mp3'));
                     setState(() {});
                   },
                   child: Text('Start'),
