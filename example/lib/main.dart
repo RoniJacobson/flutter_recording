@@ -33,17 +33,17 @@ class _MyAppState extends State<MyApp> {
     flutterRecording.onTimestampUpdate.listen((event) {
       setState(() {
         currentTime = event.last.time;
-        var a = event.removeLast();
+        var a = event.removeLast().volume;
         var b, c;
         if (event.length > 0)
-          b = event.removeLast();
+          b = event.removeLast().volume;
         else
           b = null;
         if (event.length > 0)
-          c = event.removeLast();
+          c = event.removeLast().volume;
         else
           c = null;
-        currentVolume = "${c.volume} ${b.volume} ${a.volume}";
+        currentVolume = "$c $b $a";
       });
     });
   }
