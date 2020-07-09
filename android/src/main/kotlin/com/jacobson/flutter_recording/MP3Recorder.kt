@@ -126,13 +126,15 @@ class MP3Recorder(val fileName: String, bitRate: Int, sampleRate: Int, lameQuali
     }
 
     private fun timerFunction() {
-        lastTimerTick = System.currentTimeMillis()
-        currentTime += callbackRate.toInt()
-        timestampsList.add(listOf(currentTime, amplitudeToDecibels(maxAmplitude)))
-        TimeDBStream.sendInfo(timestampsList)
-        if (timestampsList.count() == timestampBufferLength)
-            timestampsList.removeAt(0)
-        maxAmplitude = 0.0
+        synchronized(this) {
+            lastTimerTick = System.currentTimeMillis()
+            currentTime += callbackRate.toInt()
+            timestampsList.add(listOf(currentTime, amplitudeToDecibels(maxAmplitude)))
+            TimeDBStream.sendInfo(timestampsList.toMutableList())
+            if (timestampsList.count() == timestampBufferLength)
+                timestampsList.removeAt(0)
+            maxAmplitude = 0.0
+        }
     }
 
     private fun close() {
