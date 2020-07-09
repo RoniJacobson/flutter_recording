@@ -1,6 +1,6 @@
 package com.jacobson.flutter_recording
 
-public class MP3Lame (bitRate: Int, inSampleRate: Int, sampleRate: Int, lameQuality: Int){
+public class MP3Lame(bitRate: Int, inSampleRate: Int, sampleRate: Int, lameQuality: Int) {
     init {
         System.loadLibrary("lame_native")
         initialize(bitRate, inSampleRate, sampleRate, lameQuality)

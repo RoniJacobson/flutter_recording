@@ -47,7 +47,7 @@ class RecorderError extends Error {
 class Timestamp {
   final Duration time;
   final double volume;
-  Timestamp._(int time, this.volume): this.time = Duration(milliseconds: time);
+  Timestamp._(int time, this.volume) : this.time = Duration(milliseconds: time);
 }
 
 class FlutterRecording {
@@ -86,7 +86,7 @@ class FlutterRecording {
 
   FlutterRecording() {}
 
-  Future<void> init() async{
+  Future<void> init() async {
     var state = await _channel.invokeMethod('getServiceStatus');
     switch (state) {
       case "Recording":
@@ -98,12 +98,15 @@ class FlutterRecording {
       default:
     }
   }
+
   /// will start recording if we are stopped, and throw if we are already recording
   Future<void> start(
       {@required fileName,
       sampleRate = 44100,
       bitRate = 32000,
-      channels = 1, callbackRate=200, timestampBufferLength=10}) async {
+      channels = 1,
+      callbackRate = 200,
+      timestampBufferLength = 10}) async {
     if (state == RecorderState.STOPPED) {
       this.fileName = fileName;
       this.sampleRate = sampleRate;

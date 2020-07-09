@@ -17,7 +17,7 @@ import kotlin.math.log10
 
 @TargetApi(Build.VERSION_CODES.M)
 class MP3Recorder(val fileName: String, bitRate: Int, sampleRate: Int, lameQuality: Int, val notificationCallback: (name: String) -> Unit, val callbackRate: Long, val timestampBufferLength: Int) : RecordingInterface {
-//    lame_set_in_samplerate(glf, inSamplerate);
+    //    lame_set_in_samplerate(glf, inSamplerate);
 //    lame_set_num_channels(glf, outChannel);
 //    lame_set_out_samplerate(glf, outSamplerate);
 //    lame_set_brate(glf, outBitrate);
@@ -37,6 +37,7 @@ class MP3Recorder(val fileName: String, bitRate: Int, sampleRate: Int, lameQuali
     private var lastTimerTick: Long = System.currentTimeMillis()
     private var pauseTime: Long = System.currentTimeMillis()
     private var running = false
+
     init {
         val rate = AudioTrack.getNativeOutputSampleRate(AudioManager.STREAM_SYSTEM)
         bufferSize = AudioRecord.getMinBufferSize(rate, channels, encoding)
@@ -59,7 +60,7 @@ class MP3Recorder(val fileName: String, bitRate: Int, sampleRate: Int, lameQuali
     }
 
     private fun writeAudioDataToFile() {
-        recordingThread = GlobalScope.launch{
+        recordingThread = GlobalScope.launch {
             running = true
             val buffer = ShortArray(bufferSize)
             Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO)
@@ -80,18 +81,18 @@ class MP3Recorder(val fileName: String, bitRate: Int, sampleRate: Int, lameQuali
                 timerFunction()
             }, 0L, callbackRate)
             while (isActive) {
-                    // read the data into the buffer
-                    val readSize = recorder.read(buffer, 0, buffer.size)
-                    // on startup there will be zero bytes, strip them out
-                    if (running) {
-                        if (buffer.sliceArray(1..500).contentEquals(empty)) {
-                            val buffer2 = buffer.dropWhile { it.toInt() == 0 }.toShortArray()
-                            val readSize2 = buffer2.size
-                            writeShorts(readSize2, buffer2, outputStream!!)
-                        } else {
-                            writeShorts(readSize, buffer, outputStream!!)
-                        }
+                // read the data into the buffer
+                val readSize = recorder.read(buffer, 0, buffer.size)
+                // on startup there will be zero bytes, strip them out
+                if (running) {
+                    if (buffer.sliceArray(1..500).contentEquals(empty)) {
+                        val buffer2 = buffer.dropWhile { it.toInt() == 0 }.toShortArray()
+                        val readSize2 = buffer2.size
+                        writeShorts(readSize2, buffer2, outputStream!!)
+                    } else {
+                        writeShorts(readSize, buffer, outputStream!!)
                     }
+                }
             }
             println("file closed")
         }
@@ -114,12 +115,12 @@ class MP3Recorder(val fileName: String, bitRate: Int, sampleRate: Int, lameQuali
         notificationCallback("$db")
     }
 
-    private fun amplitudeToDecibels(amplitude: Double): Double{
+    private fun amplitudeToDecibels(amplitude: Double): Double {
         return 20.0 * log10(amplitude / 32767.0) + 90
     }
 
     private fun writePCMToMP3(buffer: ShortArray, readSize: Int) {
-        val mp3Buffer = ByteArray(ceil(1.25*buffer.size + 7200).toInt())
+        val mp3Buffer = ByteArray(ceil(1.25 * buffer.size + 7200).toInt())
         val bytesEncoded = mp3Lame.encodeBuffer(buffer, readSize, mp3Buffer)
         outputStream?.write(mp3Buffer, 0, bytesEncoded)
     }

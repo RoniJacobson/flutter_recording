@@ -7,8 +7,10 @@
 #include "libmp3lame/lame.h"
 
 lame_global_flags *lame_flags;
+
 JNIEXPORT void JNICALL
-Java_com_jacobson_flutter_1recording_MP3Lame_initialize(JNIEnv *env, jobject thiz, jint bit_rate, jint in_sample_rate,
+Java_com_jacobson_flutter_1recording_MP3Lame_initialize(JNIEnv *env, jobject thiz, jint bit_rate,
+                                                        jint in_sample_rate,
                                                         jint sample_rate, jint lame_quality) {
     lame_flags = lame_init();
     lame_set_in_samplerate(lame_flags, in_sample_rate);

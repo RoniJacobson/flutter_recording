@@ -21,14 +21,16 @@ class RecordingForegroundService : Service() {
     private var notificationManager: NotificationManager? = null
     private var broadcastReceiver: BroadcastReceiver? = null
     private var recorder: RecordingInterface? = null
+
     companion object {
         var state = RecorderState.Stopped
     }
+
     init {
         notificationBuilder = NotificationCompat.Builder(this, channelID)
-                            .setContentTitle("Recording")
-                            .setSmallIcon(android.R.drawable.presence_audio_online)
-                            .setOnlyAlertOnce(true)
+                .setContentTitle("Recording")
+                .setSmallIcon(android.R.drawable.presence_audio_online)
+                .setOnlyAlertOnce(true)
     }
 
     override fun onBind(p0: Intent?): IBinder? {

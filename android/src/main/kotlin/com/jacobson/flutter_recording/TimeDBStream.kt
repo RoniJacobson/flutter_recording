@@ -4,7 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import io.flutter.plugin.common.EventChannel
 
-object TimeDBStream: EventChannel.StreamHandler {
+object TimeDBStream : EventChannel.StreamHandler {
     var events: EventChannel.EventSink? = null
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
