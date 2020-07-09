@@ -18,7 +18,6 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
-import kotlin.reflect.typeOf
 
 
 /** FlutterRecordingPlugin */
@@ -35,7 +34,7 @@ public class FlutterRecordingPlugin : FlutterPlugin, MethodCallHandler, Activity
     private var activity: Activity? = null
     private var binding: ActivityPluginBinding? = null
     private val permissionRequestCode = 440404
-    private val notAvailiblePermission: String = "Getting Permissions"
+    private val notAvailablePermission: String = "Getting Permissions"
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         context = flutterPluginBinding.applicationContext
         channel = MethodChannel(flutterPluginBinding.flutterEngine.dartExecutor, "flutter_recording")
@@ -87,7 +86,7 @@ public class FlutterRecordingPlugin : FlutterPlugin, MethodCallHandler, Activity
         println(checkPermission())
         if (!checkPermission()) {
             requestPermission()
-            return result.error("1", notAvailiblePermission, null)
+            return result.error("1", notAvailablePermission, null)
         }
         return result.success(startRecorder(call))
     }
