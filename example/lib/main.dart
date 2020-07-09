@@ -34,8 +34,15 @@ class _MyAppState extends State<MyApp> {
       setState(() {
         currentTime = event.last.time;
         var a = event.removeLast();
-        var b = event.removeLast();
-        var c = event.removeLast();
+        var b, c;
+        if (event.length > 0)
+          b = event.removeLast();
+        else
+          b = null;
+        if (event.length > 0)
+          c = event.removeLast();
+        else
+          c = null;
         currentVolume = "${c.volume} ${b.volume} ${a.volume}";
       });
     });
