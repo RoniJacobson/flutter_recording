@@ -3,30 +3,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
-class AndroidOutputFormat {
-  static const AAC_ADTS = 6;
-  static const AMR_NB = 3;
-  static const AMR_WB = 4;
-  static const DEFAULT = 0;
-  static const MPEG_2_TS = 8;
-  static const MPEG_4 = 2; // H.264/AAC data encapsulated in MPEG2/TS
-  static const OGG = 11;
-  static const THREE_GPP = 1;
-  static const WEBM = 9; // VP8/VORBIS data in a WEBM container
-  static const MP3 = 20;
-}
-
-class AndroidAudioEncoder {
-  static const AAC = 3; // AAC Low Complexity (AAC-LC) audio codec
-  static const AAC_ELD = 5; // Enhanced Low Delay AAC (AAC-ELD) audio codec
-  static const AMR_NB = 1; // AMR (Narrowband) audio codec
-  static const AMR_WB = 2; // AMR (Wideband) audio codec
-  static const DEFAULT = 0;
-  static const HE_AAC = 4; // High Efficiency AAC (HE-AAC) audio codec
-  static const OPUS = 7; // Opus audio codec
-  static const VORBIS = 6; // Ogg Vorbis audio codec (Support is optional)
-}
-
 enum RecorderState {
   RECORDING,
   PAUSED,
@@ -67,6 +43,7 @@ class FlutterRecording {
   int androidAudioEncoder = AndroidAudioEncoder.DEFAULT;
   int callbackRate;
   int timestampBufferLength;
+  bool requestPermission = false;
   String mes;
 
   RecorderState get state => _state;
@@ -119,6 +96,7 @@ class FlutterRecording {
         'channels': channels,
         'androidAudioEncoder': androidAudioEncoder,
         'androidOutputFormat': androidOutputFormat,
+        'reqeustPermission': requestPermission,
         'callbackRate': callbackRate,
         'timestampBufferLength': timestampBufferLength,
       };
@@ -138,7 +116,7 @@ class FlutterRecording {
       throw RecorderError('Not Recording, can\'t pause', state);
     }
   }
-  
+
   /// will resume recording if it is paused, do nothing if we are already recording, and throw otherwise
   Future<void> resume() async {
     if (state == RecorderState.PAUSED) {
@@ -148,7 +126,7 @@ class FlutterRecording {
       throw RecorderError('Not Paused, can\'t resume', state);
     }
   }
-  
+
   /// will stop recording if we are recording, and throw if we are not recording
   Future<void> stop() async {
     if (state != RecorderState.STOPPED) {
