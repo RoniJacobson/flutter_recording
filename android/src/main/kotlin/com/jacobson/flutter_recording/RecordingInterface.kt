@@ -4,13 +4,6 @@ import java.util.*
 import kotlin.concurrent.timerTask
 import kotlin.math.log10
 
-interface RecordingInterface {
-    fun startRecording()
-    fun stopRecording()
-    fun pauseRecording()
-    fun resumeRecoding()
-}
-
 abstract class RecordingSuper (protected val fileName: String, protected val bitRate: Int, protected val sampleRate: Int, protected val notificationCallback: (name: String) -> Unit, protected val callbackRate: Long, private val timestampBufferLength: Int) {
     private val timestampsList: MutableList<List<Number>> = mutableListOf()
     private var currentTime = -callbackRate.toInt()
