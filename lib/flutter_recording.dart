@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_recording/audio_constants.dart';
 
 enum RecorderState {
   RECORDING,

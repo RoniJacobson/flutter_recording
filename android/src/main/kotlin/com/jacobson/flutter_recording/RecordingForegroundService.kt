@@ -65,7 +65,7 @@ class RecordingForegroundService : Service() {
         if (fileName != null && sampleRate != null && bitRate != null && callbackRate != null && timestampBufferLength != null) {
             recorder = MP3Recorder(fileName,
                     sampleRate,
-                    bitRate, 5, this::updateNotification, callbackRate, timestampBufferLength)
+                    bitRate, this::updateNotification, callbackRate, timestampBufferLength)
         }
         recorder?.startRecording()
         super.onStartCommand(intent, flags, startId)
