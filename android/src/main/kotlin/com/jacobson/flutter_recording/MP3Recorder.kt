@@ -12,11 +12,10 @@ import java.util.*
 import kotlin.concurrent.timerTask
 import kotlin.math.abs
 import kotlin.math.ceil
-import kotlin.math.log10
 
 
 @TargetApi(Build.VERSION_CODES.M)
-class MP3Recorder(private val fileName: String, bitRate: Int, sampleRate: Int, val notificationCallback: (name: String) -> Unit, private val callbackRate: Long, private val timestampBufferLength: Int) : RecordingInterface {
+class MP3Recorder(fileName: String, bitRate: Int, sampleRate: Int, notificationCallback: (name: String) -> Unit, callbackRate: Long, timestampBufferLength: Int) : RecordingSuper(fileName, bitRate, sampleRate, notificationCallback, callbackRate, timestampBufferLength) {
     private val timestampsList: MutableList<List<Number>> = mutableListOf()
     private val mp3Lame: MP3Lame
     private var recorder: AudioRecord
@@ -28,10 +27,6 @@ class MP3Recorder(private val fileName: String, bitRate: Int, sampleRate: Int, v
     private var outputStream: FileOutputStream? = null
     private val bufferSize: Int
     private var maxAmplitude = 0.0
-    private var currentTime = -callbackRate.toInt()
-    private var infoTimer = Timer()
-    private var lastTimerTick: Long = System.currentTimeMillis()
-    private var pauseTime: Long = System.currentTimeMillis()
     private var running = false
 
     init {
@@ -111,26 +106,10 @@ class MP3Recorder(private val fileName: String, bitRate: Int, sampleRate: Int, v
         notificationCallback("$db")
     }
 
-    private fun amplitudeToDecibels(amplitude: Double): Double {
-        return 20.0 * log10(amplitude / 32767.0) + 90
-    }
-
     private fun writePCMToMP3(buffer: ShortArray, readSize: Int) {
         val mp3Buffer = ByteArray(ceil(1.25 * buffer.size + 7200).toInt())
         val bytesEncoded = mp3Lame.encodeBuffer(buffer, readSize, mp3Buffer)
         outputStream?.write(mp3Buffer, 0, bytesEncoded)
-    }
-
-    private fun timerFunction() {
-        synchronized(this) {
-            lastTimerTick = System.currentTimeMillis()
-            currentTime += callbackRate.toInt()
-            timestampsList.add(listOf(currentTime, amplitudeToDecibels(maxAmplitude)))
-            TimeDBStream.sendInfo(timestampsList.toMutableList())
-            if (timestampsList.count() == timestampBufferLength)
-                timestampsList.removeAt(0)
-            maxAmplitude = 0.0
-        }
     }
 
     private fun close() {
@@ -153,17 +132,21 @@ class MP3Recorder(private val fileName: String, bitRate: Int, sampleRate: Int, v
         println("stopped")
     }
 
+    override fun getMaxAmplitude(): Double {
+        val temp = maxAmplitude
+        maxAmplitude = 0.0
+        return temp
+    }
+
     override fun pauseRecording() {
         running = false
-        infoTimer.cancel()
-        pauseTime = System.currentTimeMillis()
+        super.pauseRecording()
     }
 
     override fun resumeRecoding() {
-        infoTimer = Timer()
         running = true
         maxAmplitude = 0.0
-        infoTimer.scheduleAtFixedRate(timerTask { timerFunction() }, callbackRate - (pauseTime - lastTimerTick), callbackRate)
+        super.resumeRecoding()
     }
 
 }
