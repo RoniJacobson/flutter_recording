@@ -24,37 +24,45 @@ class EncoderFormat {
   EncoderFormat(this.encoder, this.outputFormat);
 }
 
-EncoderFormat FormatToEncoderFormat(AudioFormat audioFormat) {
+EncoderFormat formatToEncoderFormat(AudioFormat audioFormat) {
   switch (audioFormat) {
     case AudioFormat.aac_ADTS:
-      return EncoderFormat(AndroidAudioEncoder.AAC, AndroidOutputFormat.AAC_ADTS);
+      return EncoderFormat(
+          AndroidAudioEncoder.AAC, AndroidOutputFormat.AAC_ADTS);
       break;
     case AudioFormat.aac_MPEG:
       return EncoderFormat(AndroidAudioEncoder.AAC, AndroidOutputFormat.MPEG_4);
       break;
     case AudioFormat.aac_eld_ADTS:
-      return EncoderFormat(AndroidAudioEncoder.AAC_ELD, AndroidOutputFormat.AAC_ADTS);
+      return EncoderFormat(
+          AndroidAudioEncoder.AAC_ELD, AndroidOutputFormat.AAC_ADTS);
       break;
     case AudioFormat.aac_eld_MPEG:
-      return EncoderFormat(AndroidAudioEncoder.AAC_ELD, AndroidOutputFormat.MPEG_4);
+      return EncoderFormat(
+          AndroidAudioEncoder.AAC_ELD, AndroidOutputFormat.MPEG_4);
       break;
     case AudioFormat.he_aac_ADTS:
-      return EncoderFormat(AndroidAudioEncoder.HE_AAC, AndroidOutputFormat.AAC_ADTS);
+      return EncoderFormat(
+          AndroidAudioEncoder.HE_AAC, AndroidOutputFormat.AAC_ADTS);
       break;
     case AudioFormat.he_aac_MPEG:
-      return EncoderFormat(AndroidAudioEncoder.HE_AAC, AndroidOutputFormat.MPEG_4);
+      return EncoderFormat(
+          AndroidAudioEncoder.HE_AAC, AndroidOutputFormat.MPEG_4);
       break;
     case AudioFormat.amr_nb:
-      return EncoderFormat(AndroidAudioEncoder.AMR_NB, AndroidOutputFormat.AMR_NB);
+      return EncoderFormat(
+          AndroidAudioEncoder.AMR_NB, AndroidOutputFormat.AMR_NB);
       break;
     case AudioFormat.amr_wb:
-      return EncoderFormat(AndroidAudioEncoder.AMR_WB, AndroidOutputFormat.AMR_WB);
+      return EncoderFormat(
+          AndroidAudioEncoder.AMR_WB, AndroidOutputFormat.AMR_WB);
       break;
     case AudioFormat.opus_OGG:
       return EncoderFormat(AndroidAudioEncoder.OPUS, AndroidOutputFormat.OGG);
       break;
     case AudioFormat.opus_MPEG:
-      return EncoderFormat(AndroidAudioEncoder.OPUS, AndroidOutputFormat.MPEG_4);
+      return EncoderFormat(
+          AndroidAudioEncoder.OPUS, AndroidOutputFormat.MPEG_4);
       break;
     case AudioFormat.mp3:
       return EncoderFormat(AndroidAudioEncoder.MP3, AndroidOutputFormat.MP3);
