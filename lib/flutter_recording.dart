@@ -79,17 +79,14 @@ class FlutterRecording {
 
   /// will start recording if we are stopped, and throw if we are already recording
   Future<void> start(
-      {@required fileName,
-      sampleRate = 44100,
-      bitRate = 32000,
-      channels = 1,
-      callbackRate = 200,
-      timestampBufferLength = 10}) async {
+      {@required String fileName,
+      @required AudioFormat format,
+      @required int sampleRate,
+      @required int bitRate,
+      int channels = 1,
+      int callbackRate = 200,
+      int timestampBufferLength = 10}) async {
     if (state == RecorderState.STOPPED) {
-      this.fileName = fileName;
-      this.sampleRate = sampleRate;
-      this.bitRate = bitRate;
-      this.channels = channels;
       var args = {
         'fileName': fileName,
         'sampleRate': sampleRate,
