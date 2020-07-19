@@ -29,11 +29,11 @@ abstract class RecordingSuper (protected val fileName: String, protected val bit
     }
 
     private fun hms(currentTime: Int): String {
-        val fullSeconds = currentTime / 1000;
-        val seconds = fullSeconds % 60;
-        val minutes = fullSeconds / 60 % 60;
-        val hours = fullSeconds / 3600;
-        return "$hours:$minutes:$seconds";
+        val fullSeconds = currentTime / 1000
+        val seconds = (fullSeconds % 60).toString().padStart(2, '0')
+        val minutes = (fullSeconds / 60 % 60).toString().padStart(2, '0')
+        val hours = (fullSeconds / 3600).toString().padStart(2, '0')
+        return "$hours:$minutes:$seconds"
     }
 
     fun timerFunction() {
