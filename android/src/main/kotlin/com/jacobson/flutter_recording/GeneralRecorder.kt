@@ -12,13 +12,15 @@ class GeneralRecorder(fileName: String, encoder: Int, outputFormat: Int, bitRate
     val recorder: MediaRecorder = MediaRecorder()
     init {
         recorder.setAudioChannels(1)
-        recorder.setAudioEncoder(encoder)
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
         recorder.setOutputFormat(outputFormat)
+        recorder.setAudioEncoder(encoder)
         recorder.setAudioEncodingBitRate(bitRate)
         recorder.setAudioSamplingRate(sampleRate)
         val file = File(fileName)
         file.parentFile.mkdirs()
         recorder.setOutputFile(fileName)
+        recorder.prepare()
     }
     override fun startRecording() {
         recorder.start()
@@ -26,6 +28,7 @@ class GeneralRecorder(fileName: String, encoder: Int, outputFormat: Int, bitRate
     }
 
     override fun stopRecording() {
+        infoTimer.cancel()
         recorder.stop()
     }
 
@@ -43,5 +46,6 @@ class GeneralRecorder(fileName: String, encoder: Int, outputFormat: Int, bitRate
     @RequiresApi(Build.VERSION_CODES.N)
     override fun resumeRecoding() {
         recorder.resume()
+        super.resumeRecoding()
     }
 }
