@@ -93,7 +93,7 @@ class FlutterRecording {
         'channels': channels,
         'androidAudioEncoder': format.encoder,
         'androidOutputFormat': format.outputFormat,
-        'reqeustPermission': requestPermission,
+        'requestPermission': requestPermission,
         'callbackRate': callbackRate,
         'timestampBufferLength': timestampBufferLength,
       };
