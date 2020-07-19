@@ -20,7 +20,7 @@ class RecordingForegroundService : Service() {
     private var intent: Intent? = null
     private var notificationManager: NotificationManager? = null
     private var broadcastReceiver: BroadcastReceiver? = null
-    private var recorder: RecordingInterface? = null
+    private var recorder: RecordingSuper? = null
 
     companion object {
         var state = RecorderState.Stopped
