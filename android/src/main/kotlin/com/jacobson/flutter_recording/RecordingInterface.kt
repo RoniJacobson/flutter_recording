@@ -8,8 +8,8 @@ abstract class RecordingSuper (protected val fileName: String, protected val bit
     private val timestampsList: MutableList<List<Number>> = mutableListOf()
     private var currentTime = -callbackRate.toInt()
     protected var infoTimer = Timer()
-    private var lastTimerTick: Long = System.currentTimeMillis()
-    private var pauseTime: Long = System.currentTimeMillis()
+    protected var lastTimerTick: Long = System.currentTimeMillis()
+    protected var pauseTime: Long = System.currentTimeMillis()
     abstract fun startRecording()
     abstract fun stopRecording()
     abstract fun getMaxAmplitude(): Double
