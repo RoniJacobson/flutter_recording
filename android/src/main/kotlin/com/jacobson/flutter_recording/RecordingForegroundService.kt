@@ -66,12 +66,12 @@ class RecordingForegroundService : Service() {
         val androidAudioEncoder: Int? = intent?.getIntExtra("androidAudioEncoder", MediaRecorder.AudioEncoder.DEFAULT)
         val androidOutputFormat: Int? = intent?.getIntExtra("androidOutputFormat", MediaRecorder.OutputFormat.DEFAULT)
         if (fileName != null && sampleRate != null && bitRate != null && callbackRate != null && timestampBufferLength != null && androidAudioEncoder != null && androidOutputFormat != null) {
-            if (androidAudioEncoder > 100) {
-                recorder = MP3Recorder(fileName,
+            recorder = if (androidAudioEncoder > 100) {
+                MP3Recorder(fileName,
                         sampleRate,
                         bitRate, this::updateNotification, callbackRate, timestampBufferLength)
             } else {
-                recorder = GeneralRecorder(fileName, androidAudioEncoder, androidOutputFormat, bitRate, sampleRate, this::updateNotification, callbackRate, timestampBufferLength)
+                GeneralRecorder(fileName, androidAudioEncoder, androidOutputFormat, bitRate, sampleRate, this::updateNotification, callbackRate, timestampBufferLength)
             }
         }
         recorder?.startRecording()
