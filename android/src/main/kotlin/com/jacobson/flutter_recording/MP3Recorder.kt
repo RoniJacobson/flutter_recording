@@ -103,7 +103,6 @@ class MP3Recorder(fileName: String, bitRate: Int, sampleRate: Int, notificationC
         }
         writePCMToMP3(buffer, readSize)
         println("Max amplitude: $maxAmplitude ; DB: $db")
-        notificationCallback("$db")
     }
 
     private fun writePCMToMP3(buffer: ShortArray, readSize: Int) {
