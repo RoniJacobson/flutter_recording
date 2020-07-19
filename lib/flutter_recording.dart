@@ -40,8 +40,7 @@ class FlutterRecording {
   int sampleRate;
   int channels;
   int bitRate;
-  int androidOutputFormat = AndroidOutputFormat.MP3;
-  int androidAudioEncoder = AndroidAudioEncoder.DEFAULT;
+  EncoderFormat encoderFormat;
   int callbackRate;
   int timestampBufferLength;
   bool requestPermission = false;
@@ -80,7 +79,7 @@ class FlutterRecording {
   /// will start recording if we are stopped, and throw if we are already recording
   Future<void> start(
       {@required String fileName,
-      @required AudioFormat format,
+      @required EncoderFormat format,
       @required int sampleRate,
       @required int bitRate,
       int channels = 1,
@@ -92,8 +91,8 @@ class FlutterRecording {
         'sampleRate': sampleRate,
         'bitRate': bitRate,
         'channels': channels,
-        'androidAudioEncoder': androidAudioEncoder,
-        'androidOutputFormat': androidOutputFormat,
+        'androidAudioEncoder': format.encoder,
+        'androidOutputFormat': format.outputFormat,
         'reqeustPermission': requestPermission,
         'callbackRate': callbackRate,
         'timestampBufferLength': timestampBufferLength,
