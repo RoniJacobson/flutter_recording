@@ -27,7 +27,6 @@ public class FlutterRecordingPlugin : FlutterPlugin, MethodCallHandler, Activity
     ///
     /// This local reference serves to register the plugin with the Flutter Engine and unregister it
     /// when the Flutter Engine is detached from the Activity
-    private var recorder: RecordingInterface? = null
     private lateinit var context: Context
     private lateinit var channel: MethodChannel
     private lateinit var eventChannel: EventChannel
