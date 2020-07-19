@@ -4,7 +4,7 @@ class AndroidOutputFormat {
   static const AMR_WB = 4;
   static const MPEG_4 = 2; // H.264/AAC data encapsulated in MPEG2/TS
   static const OGG = 11;
-  static const MP3 = 20;
+  static const MP3 = 101;
 }
 
 class AndroidAudioEncoder {
@@ -14,7 +14,7 @@ class AndroidAudioEncoder {
   static const AMR_WB = 2; // AMR (Wideband) audio codec
   static const HE_AAC = 4; // High Efficiency AAC (HE-AAC) audio codec
   static const OPUS = 7; // Opus audio codec
-  static const MP3 = 20;
+  static const MP3 = 101;
 }
 
 class EncoderFormat {
