@@ -96,6 +96,8 @@ public class FlutterRecordingPlugin : FlutterPlugin, MethodCallHandler, Activity
         val bitRate: Int? = call.argument<Int>("bitRate")
         val callbackRate: Int? = call.argument<Int>("callbackRate")
         val timestampBufferLength: Int? = call.argument<Int>("timestampBufferLength")
+        val androidAudioEncoder: Int? = call.argument<Int>("androidAudioEncoder")
+        val androidOutputFormat: Int? = call.argument<Int>("androidOutputFormat")
         activity?.let {
             val serviceIntent = Intent(context, RecordingForegroundService::class.java)
             serviceIntent.putExtra("fileName", fileName)
@@ -103,6 +105,8 @@ public class FlutterRecordingPlugin : FlutterPlugin, MethodCallHandler, Activity
             serviceIntent.putExtra("bitRate", bitRate)
             serviceIntent.putExtra("callbackRate", callbackRate)
             serviceIntent.putExtra("timestampBufferLength", timestampBufferLength)
+            serviceIntent.putExtra("androidAudioEncoder", androidAudioEncoder)
+            serviceIntent.putExtra("androidOutputFormat", androidOutputFormat)
             ContextCompat.startForegroundService(it, serviceIntent)
         }
         return "Starting"

@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.MediaRecorder
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -62,10 +63,16 @@ class RecordingForegroundService : Service() {
         val bitRate: Int? = intent?.getIntExtra("bitRate", 32000)
         val callbackRate: Long? = intent?.getIntExtra("callbackRate", 200)?.toLong()
         val timestampBufferLength: Int? = intent?.getIntExtra("timestampBufferLength", 10)
-        if (fileName != null && sampleRate != null && bitRate != null && callbackRate != null && timestampBufferLength != null) {
-            recorder = MP3Recorder(fileName,
-                    sampleRate,
-                    bitRate, this::updateNotification, callbackRate, timestampBufferLength)
+        val androidAudioEncoder: Int? = intent?.getIntExtra("androidAudioEncoder", MediaRecorder.AudioEncoder.DEFAULT)
+        val androidOutputFormat: Int? = intent?.getIntExtra("androidOutputFormat", MediaRecorder.OutputFormat.DEFAULT)
+        if (fileName != null && sampleRate != null && bitRate != null && callbackRate != null && timestampBufferLength != null && androidAudioEncoder != null && androidOutputFormat != null) {
+            if (androidAudioEncoder > 100) {
+                recorder = MP3Recorder(fileName,
+                        sampleRate,
+                        bitRate, this::updateNotification, callbackRate, timestampBufferLength)
+            } else {
+                recorder = GeneralRecorder(fileName, androidAudioEncoder, androidOutputFormat, bitRate, sampleRate, this::updateNotification, callbackRate, timestampBufferLength)
+            }
         }
         recorder?.startRecording()
         super.onStartCommand(intent, flags, startId)
