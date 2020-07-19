@@ -28,6 +28,14 @@ abstract class RecordingSuper (protected val fileName: String, protected val bit
         return 20.0 * log10(amplitude / 32767.0) + 90
     }
 
+    private fun hms(currentTime: Int): String {
+        val fullSeconds = currentTime / 1000;
+        val seconds = fullSeconds % 60;
+        val minutes = fullSeconds / 60 % 60;
+        val hours = fullSeconds / 3600;
+        return "$hours:$minutes:$seconds";
+    }
+
     fun timerFunction() {
         synchronized(this) {
             lastTimerTick = System.currentTimeMillis()
@@ -36,6 +44,7 @@ abstract class RecordingSuper (protected val fileName: String, protected val bit
             TimeDBStream.sendInfo(timestampsList.toMutableList())
             if (timestampsList.count() == timestampBufferLength)
                 timestampsList.removeAt(0)
+            notificationCallback(hms(currentTime))
         }
     }
 }
