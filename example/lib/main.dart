@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_recording/audio_constants.dart';
 import 'package:flutter_recording/flutter_recording.dart';
 import 'package:path/path.dart' as path;
 
@@ -63,7 +64,10 @@ class _MyAppState extends State<MyApp> {
                     await flutterRecording.start(
                         fileName: path.join(
                             '/storage/emulated/0/flutter_recording_example',
-                            'bob.mp3'));
+                            'bob.mp3'),
+                        bitRate: 32000,
+                        sampleRate: 44100,
+                        format: formatToEncoderFormat(AudioFormat.mp3));
                     setState(() {});
                   },
                   child: Text('Start'),
